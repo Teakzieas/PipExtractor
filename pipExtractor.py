@@ -25,6 +25,7 @@ def is_standard_library_module(module_name):
 
 # read lines of a file
 def read_file(filename, output_file):
+    pip_list = get_pip_list()   
     with open(filename, 'r') as f:
         for i in f:
             name = ""
@@ -47,7 +48,6 @@ def read_file(filename, output_file):
                 except:
                     print(f"#fail to get pip name for {name}", file=output_file)
                     fail = False
-                pip_list = get_pip_list()   
                 if(fail):  
                     for package in pip_list:
                         if name in package:
@@ -66,7 +66,7 @@ with open(output_file_path, 'w') as output_file:
     def traverse_directory(directory):
         for root, dirs, files in os.walk(directory):
             for file in files:
-                if file.endswith(".py") and file != os.path.basename(__file__):
+                if (file.endswith(".py") or file.endswith(".pyw")) and file != os.path.basename(__file__):
                     file_path = os.path.join(root, file)
                     read_file(file_path, output_file)
 
@@ -90,3 +90,29 @@ def rearrange_alphabetically(file_path):
 # Example usage:
 file_path = 'requirements.txt'  # Replace with the path to your file
 rearrange_alphabetically(file_path)
+
+
+def remove_duplicate_lines(file_path):
+    try:
+        # Open the file for reading
+        with open(file_path, 'r') as file:
+            # Read all lines from the file
+            lines = file.readlines()
+
+        # Remove duplicate lines while preserving the order
+        unique_lines = list(dict.fromkeys(lines))
+
+        # Open the same file for writing (overwriting)
+        with open(file_path, 'w') as file:
+            # Write the unique lines back to the file
+            file.writelines(unique_lines)
+
+        print(f"Duplicate lines removed. Unique lines saved to {file_path}")
+
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+
+# Example usage:
+file_path = 'requirements.txt'  # Replace with your file path
+
+remove_duplicate_lines(file_path)
